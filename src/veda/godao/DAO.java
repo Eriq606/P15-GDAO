@@ -101,10 +101,10 @@ public class DAO {
             connect.rollback();
             throw ex;
         }finally{
+            statemnt.close();
             if(opened){
                 connect.close();
             }
-            statemnt.close();
         }
     }
     public void insertWithPrimaryKey(Connection connex, Object o) throws Exception{
@@ -136,10 +136,10 @@ public class DAO {
             connect.rollback();
             throw ex;
         }finally{
+            statemnt.close();
             if(opened){
                 connect.close();
             }
-            statemnt.close();
         }
     }
     public <T>T[] select(Connection connex, Class<T> c) throws Exception{
@@ -162,11 +162,12 @@ public class DAO {
         HashMap<Field, String> columns=QueryUtils.getColumnsWithField(c);
         try{
             LinkedList liste=new LinkedList();
-            ResultSet result=statemnt.executeQuery();
-            while(result.next()){
-                T obj=(T)c.getConstructor().newInstance();
-                obj=(T)QueryUtils.mapResultSet(connect, result, obj, columns, this);
-                liste.add(obj);
+            try(ResultSet result=statemnt.executeQuery()){
+                while(result.next()){
+                    T obj=(T)c.getConstructor().newInstance();
+                    obj=(T)QueryUtils.mapResultSet(connect, result, obj, columns, this);
+                    liste.add(obj);
+                }
             }
             T[] objets=(T[])Array.newInstance(c, liste.size());
             for(int i=0;i<objets.length;i++){
@@ -174,10 +175,10 @@ public class DAO {
             }
             return objets;
         }finally{
+            statemnt.close();
             if(opened){
                 connect.close();
             }
-            statemnt.close();
         }
     }
     public <T>T[] select(Connection connex, Class<T> c, T where) throws Exception{
@@ -202,11 +203,12 @@ public class DAO {
         HashMap<Field, String> columns=QueryUtils.getColumnsWithField(c);
         try{
             LinkedList liste=new LinkedList();
-            ResultSet result=statemnt.executeQuery();
-            while(result.next()){
-                T obj=c.getConstructor().newInstance();
-                obj=(T)QueryUtils.mapResultSet(connect, result, obj, columns, this);
-                liste.add(obj);
+            try(ResultSet result=statemnt.executeQuery()){
+                while(result.next()){
+                    T obj=c.getConstructor().newInstance();
+                    obj=(T)QueryUtils.mapResultSet(connect, result, obj, columns, this);
+                    liste.add(obj);
+                }
             }
             T[] objets=(T[])Array.newInstance(c, liste.size());
             for(int i=0;i<objets.length;i++){
@@ -214,10 +216,10 @@ public class DAO {
             }
             return objets;
         }finally{
+            statemnt.close();
             if(opened){
                 connect.close();
             }
-            statemnt.close();
         }
     }
     public void update(Connection connex, Object change, Object where) throws Exception{
@@ -255,10 +257,10 @@ public class DAO {
             connect.rollback();
             throw ex;
         }finally{
+            statemnt.close();
             if(opened){
                 connect.close();
             }
-            statemnt.close();
         }
     }
     public void delete(Connection connex, Object where) throws Exception{
@@ -290,10 +292,10 @@ public class DAO {
             connect.rollback();
             throw ex;
         }finally{
+            statemnt.close();
             if(opened){
                 connect.close();
             }
-            statemnt.close();
         }
     }
     public void customUpdate(Connection connex, String query) throws Exception{
@@ -322,10 +324,10 @@ public class DAO {
             connect.rollback();
             throw e;
         }finally{
+            statement.close();
             if(opened){
                 connect.close();
             }
-            statement.close();
         }
     }
 }
